@@ -1,19 +1,33 @@
 package com.project.hiker
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import com.project.hiker.ui.HikerViewModel
 
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var viewModel: HikerViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        viewModel =
+            ViewModelProviders.of(this)[HikerViewModel::class.java]
+
+        viewModel.fetchTrails()
+        viewModel.getTrails().observe(this, Observer {
+            Log.d("TRAILS: ", it.toString())
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
