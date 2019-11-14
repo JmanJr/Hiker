@@ -1,10 +1,30 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.project.hiker.MainActivity">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+    tools:shwowIn="navigation_view"
+    tools:context="com.project.hiker.ui.MainActivity">
+
+    <group>
+        <item
+            android:id="@+id/action_settings"
+            android:orderInCategory="100"
+            android:title="@string/action_settings"
+            app:showAsAction="never" />
+
+        <item
+            android:id="@+id/logout"
+            android:orderInCategory="100"
+            android:title="logout"
+            app:showAsAction="never"
+            />
+
+        <item
+            android:id="@+id/favs"
+            android:orderInCategory="1000"
+            android:title="Favorites"
+            app:showAsAction="never"/>
+
+    </group>
+
+
 </menu>
