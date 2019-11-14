@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:height="1000dp">
+        <item
+            android:id="@+id/nav_home"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_favs"
+            android:title="Favorites" />
+        <item
+            android:id="@+id/nav_location"
+            android:title="Change Location" />
+<!--        <item-->
+<!--            android:id="@+id/sign_out"-->
+<!--            android:title="Sign Out"/>-->
+    </group>
+
+<!--    <item android:title="Communicate">-->
+<!--        <menu>-->
+<!--            <item-->
+<!--                android:id="@+id/nav_share"-->
+<!--                android:title="menu_share" />-->
+<!--            <item-->
+<!--                android:id="@+id/nav_send"-->
+<!--                android:title="menu_send" />-->
+<!--        </menu>-->
+<!--    </item>-->
+
+</menu>
