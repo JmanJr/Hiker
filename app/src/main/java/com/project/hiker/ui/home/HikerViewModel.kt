@@ -1,7 +1,7 @@
 package com.project.hiker.ui.home
 
 import androidx.lifecycle.MutableLiveData
-import com.project.hiker.api.HikerApi
+import com.project.hiker.api.TrailsApi
 import com.project.hiker.api.Trail
 import com.project.hiker.api.HikerRepository
 import kotlinx.coroutines.Dispatchers
@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 class HikerViewModel: ViewModel() {
 
-    private val hikerApi = HikerApi.create()
+    private val hikerApi = TrailsApi.create()
     private val trailRepository = HikerRepository(hikerApi)
     private var trails = MutableLiveData<List<Trail>>().apply {
         value = mutableListOf()
