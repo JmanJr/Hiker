@@ -2,9 +2,9 @@ package com.project.hiker.api
 
 import android.util.Log
 
-class HikerRepository(private val hikerApi: HikerApi) {
+class HikerRepository(private val trailsApi: TrailsApi) {
 
-    fun unpackTrails(response: HikerApi.Trails): List<Trail>? {
+    fun unpackTrails(response: TrailsApi.Trails): List<Trail>? {
         val trails: MutableList<Trail>? = mutableListOf()
 
         response.trails.forEach {
@@ -16,7 +16,13 @@ class HikerRepository(private val hikerApi: HikerApi) {
     }
 
     fun getTrails(): List<Trail>? {
-            val trails = hikerApi.getTrails().execute().body()
+            val trails = trailsApi.getTrails().execute().body()
             return unpackTrails(trails!!)
+    }
+
+    fun getConditions(): Condition? {
+        val conditions = trailsApi.getConditions().execute().body()
+        Log.d("XXXXXXXXX",conditions.toString())
+        return conditions
     }
 }

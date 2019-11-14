@@ -9,10 +9,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
-interface HikerApi {
+interface WeatherApi {
 
     @GET("/data/get-trails?lat=40.0274&lon=-105.2519&maxDistance=10&key=200620954-df710afab6f0931dab3f24fdd7754c1d")
-    fun getTrails(): Call<Trails>
+    fun getWeather(): Call<Trails>
 
     class Trails(
         val trails: List<Trail>
@@ -27,8 +27,8 @@ interface HikerApi {
             .scheme("https")
             .host("www.hikingproject.com")
             .build()
-        fun create(): HikerApi = create(httpurl)
-        private fun create(httpUrl: HttpUrl): HikerApi {
+        fun create(): WeatherApi = create(httpurl)
+        private fun create(httpUrl: HttpUrl): WeatherApi {
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().apply {
@@ -40,7 +40,7 @@ interface HikerApi {
                 .client(client)
                 .addConverterFactory(buildGsonConverterFactory())
                 .build()
-                .create(HikerApi::class.java)
+                .create(WeatherApi::class.java)
         }
     }
 }
