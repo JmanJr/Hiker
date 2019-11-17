@@ -18,8 +18,6 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class LocationFragment: Fragment() {
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

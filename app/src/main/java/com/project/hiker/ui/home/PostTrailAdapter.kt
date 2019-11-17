@@ -48,31 +48,29 @@ class PostTrailAdapter(private val viewModel: HikerViewModel,
         var comments = itemView.findViewById<TextView>(R.id.summary)
         var theFavView = itemView.findViewById<ImageView>(R.id.trailFav)
 
-        init {
-            theFavView.setOnClickListener{
-                    val position = adapterPosition
-                    // Toggle Favorite
-                    if(viewModel.isFav(trails[position])) {
-                        viewModel.removeFav(trails[position])
-                    } else {
-                        viewModel.addFav(trails[position])
-                    }
-                    notifyItemChanged(position)
-            }
-        }
-
         fun bind(item: Trail?) {
             if(item == null) return
             title.text = item.name
             println("bind")
-//
+
             stars.text = item.stars.toString()
             comments.text = item.summary
 
-            if (viewModel.isFav(item)) {
-                theFavView.setImageResource(R.drawable.ic_favorite_black_24dp)
-            } else {
-                theFavView.setImageResource(R.drawable.ic_favorite_border_black_24dp)
+            theFavView.setOnClickListener {
+                // unfavorite. notify if on favorites screen
+                if (viewModel.isFav(item)) {
+                    theFavView.setImageResource(R.drawable.ic_favorite_border_black_24dp)
+                    viewModel.removeFav(item)
+                    if (unfavoriteIsRemove) {
+                        notifyDataSetChanged()
+                    }
+                }
+                // favorite
+                else {
+                    theFavView.setImageResource(R.drawable.ic_favorite_black_24dp)
+                    println("ADDING IT")
+                    viewModel.addFav(item)
+                }
             }
         }
     }

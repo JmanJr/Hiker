@@ -1,22 +1,22 @@
 package com.project.hiker.ui.home
 
 import androidx.lifecycle.MutableLiveData
-import com.project.hiker.api.TrailsApi
-import com.project.hiker.api.Trail
-import com.project.hiker.api.HikerRepository
 import kotlinx.coroutines.Dispatchers
 import androidx.lifecycle.*
+import com.project.hiker.api.*
 import kotlinx.coroutines.launch
 
 class HikerViewModel: ViewModel() {
 
-    private val hikerApi = TrailsApi.create()
-    private val trailRepository = HikerRepository(hikerApi)
+    private val trailsApi = TrailsApi.create()
+    private val latLonApi = LatLonApi.create()
+    private val trailRepository = HikerRepository(trailsApi, latLonApi)
     private var trails = MutableLiveData<List<Trail>>().apply {
         value = mutableListOf()
     }
+    private var currentAddress = MutableLiveData<String>()
 
-    private var favTrails = MutableLiveData<List<Trail>>().apply {
+    private var favTrails = MutableLiveData<MutableList<Trail>>().apply {
         value = mutableListOf()
     }
 
@@ -24,23 +24,21 @@ class HikerViewModel: ViewModel() {
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO) {
         // Update LiveData from IO dispatcher, use postValue
-        trails.postValue(trailRepository.getTrails())
+        trails.postValue(trailRepository.getTrails(currentAddress.value.toString()))
     }
 
     fun getTrails() : LiveData<List<Trail>> {
         return trails
     }
 
-    internal fun getFavs(): LiveData<List<Trail>> {
+    internal fun getFavs(): MutableLiveData<MutableList<Trail>> {
         return favTrails
     }
 
     fun addFav(trail: Trail) {
-        val localList = favTrails.value?.toMutableList()
-        localList?.let {
-            it.add(trail)
-            favTrails.value = it
-        }
+        favTrails.value!!.add(trail)
+        favTrails.postValue(favTrails.value!!)
+        println(favTrails.value.toString())
     }
 
     fun isFav(trailPost: Trail): Boolean {
@@ -48,10 +46,15 @@ class HikerViewModel: ViewModel() {
     }
 
     fun removeFav(trail: Trail) {
-        val localList = favTrails.value?.toMutableList()
-        localList?.let{
-            it.remove(trail)
-            favTrails.value = it
-        }
+        favTrails.value!!.remove(trail)
+        favTrails.postValue(favTrails.value!!)
+    }
+    
+    fun getAddress(): LiveData<String> {
+        return currentAddress
+    }
+
+    fun setAddress(newAddress: String) {
+        currentAddress.postValue(newAddress)
     }
 }

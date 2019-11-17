@@ -31,10 +31,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-
-
-
-
     private fun submitPosts(trails: List<Trail>, adapter: PostTrailAdapter) {
         adapter.submitPosts(trails)
 
@@ -61,20 +57,27 @@ class HomeFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
 
-        if(arguments != null) {
-            println("bundled address: ${arguments?.get("address")}")
-            textView.text = arguments?.get("address").toString()
-        }
-
-
-
         viewModel =
             ViewModelProviders.of(this)[HikerViewModel::class.java]
+
+        if(arguments != null) {
+            println("bundled address: ${arguments?.get("address")}")
+            val newAddress = arguments?.get("address").toString()
+            if (newAddress != null && newAddress.isNotBlank())
+                viewModel.setAddress(newAddress)
+        } else {
+            viewModel.setAddress("Austin, Texas")
+        }
 
         initAdapter(root)
         println("view model in Home: " + viewModel)
 
-        viewModel.fetchTrails()
+        viewModel.getAddress().observe(this, Observer {
+            Log.d("ADDRESS", it)
+            textView.text = it
+            viewModel.fetchTrails()
+        })
+
         viewModel.getTrails().observe(this, Observer {
             println("number of trails: ${it.size}")
             Log.d("TRAILS: ", it.toString())

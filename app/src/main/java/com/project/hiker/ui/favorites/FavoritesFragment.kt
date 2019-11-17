@@ -40,18 +40,13 @@ class FavoritesFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         (activity as AppCompatActivity).supportActionBar?.title = "Favorites"
-        viewModel = activity?.run {
-            ViewModelProviders.of(this)[HikerViewModel::class.java]
-        } ?: throw Exception("Invalid Activity")
-        val vmp = ViewModelProviders.of(this)[HikerViewModel::class.java]
-        println("view model in favorites: " + vmp)
-//        Log.d(javaClass.simpleNa
-//        Log.d(javaClass.simpleName, "onCreateView ${viewModel.selected}")
+        viewModel = ViewModelProviders.of(this).get(HikerViewModel::class.java)
+        println("view model in favorites: " + viewModel.getTrails().value.toString())
         // Process menu for this fragment
         val root = inflater.inflate(R.layout.favorites_fragment, container, false)
         val adapter = initRecyclerView(root)
         viewModel.getFavs().observe(this, Observer {
-            println("in favorites fragment: " + it.size)
+            println("in favorites fragment: " + it.toString())
             adapter.submitPosts(it)
         })
         return root

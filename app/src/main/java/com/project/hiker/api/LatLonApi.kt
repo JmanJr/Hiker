@@ -9,21 +9,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
-import retrofit2.http.Query
-import retrofit2.http.QueryMap
 
-interface TrailsApi {
+interface LatLonApi {
 
-    @GET("/data/get-trails")
-    fun getTrails(
-        @QueryMap paramsMap: Map<String, String> ): Call<Trails>
-
-    @GET("/data/get-conditions?ids=7001635&key=200620954-df710afab6f0931dab3f24fdd7754c1d")
-    fun getConditions(): Call<Condition>
-
-    class Trails(
-        val trails: List<Trail>
-    )
+    @GET("/{address}?json=1")
+    suspend fun getLatLon(
+        @Path("address") address: String): LatLon
 
     companion object {
         private fun buildGsonConverterFactory(): GsonConverterFactory {
@@ -32,10 +23,10 @@ interface TrailsApi {
         }
         var httpurl = HttpUrl.Builder()
             .scheme("https")
-            .host("www.hikingproject.com")
+            .host("geocode.xyz")
             .build()
-        fun create(): TrailsApi = create(httpurl)
-        private fun create(httpUrl: HttpUrl): TrailsApi {
+        fun create(): LatLonApi = create(httpurl)
+        private fun create(httpUrl: HttpUrl): LatLonApi {
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().apply {
@@ -47,7 +38,7 @@ interface TrailsApi {
                 .client(client)
                 .addConverterFactory(buildGsonConverterFactory())
                 .build()
-                .create(TrailsApi::class.java)
+                .create(LatLonApi::class.java)
         }
     }
 }
