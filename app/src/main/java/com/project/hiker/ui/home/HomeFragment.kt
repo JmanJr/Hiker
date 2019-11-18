@@ -11,6 +11,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.project.hiker.R
 import com.project.hiker.api.Trail
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -66,7 +72,24 @@ class HomeFragment : Fragment() {
             if (newAddress != null && newAddress.isNotBlank())
                 viewModel.setAddress(newAddress)
         } else {
-            viewModel.setAddress("Austin, Texas")
+            val addressListener = object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    // Get Post object and use the values to update the UI
+                    val currentFirebaseUser: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
+                    val address = dataSnapshot.child("currentLocations").child(currentFirebaseUser.uid).getValue(String::class.java)
+                    if (address == null) {
+                        viewModel.setAddress("Austin, Texas")
+                    } else {
+                        viewModel.setAddress(address)
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    viewModel.setAddress("Austin, Texas")
+                }
+            }
+            val database = FirebaseDatabase.getInstance().reference
+            database.addListenerForSingleValueEvent(addressListener)
         }
 
         initAdapter(root)
