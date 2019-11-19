@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
         sign_out.setOnClickListener {
             Toast.makeText(this, "signing out!", Toast.LENGTH_SHORT).show()
             signOut()
-            createSignInIntent()
         }
 
 
