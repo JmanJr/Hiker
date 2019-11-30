@@ -20,16 +20,30 @@ class HikerViewModel: ViewModel() {
         value = mutableListOf()
     }
     private var currentAddress = MutableLiveData<String>()
+    private var currentCity = MutableLiveData<String>()
+    private var currentStateIndex = MutableLiveData<Int>()
     private var favTrails = MutableLiveData<MutableList<Trail>>().apply {
         value = mutableListOf()
     }
     private var database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private var maxDistance = MutableLiveData<String>()
+    private var sort = MutableLiveData<String>().apply {
+        value = "quality"
+    }
+    private var minLength = MutableLiveData<String>().apply {
+        value = "0"
+    }
+    private var minStars = MutableLiveData<String>().apply {
+        value = "0"
+    }
+
 
     fun fetchTrails() = viewModelScope.launch(
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO) {
         // Update LiveData from IO dispatcher, use postValue
-        trails.postValue(trailRepository.getTrails(currentAddress.value.toString()))
+        trails.postValue(trailRepository.getTrails(currentAddress.value.toString(), maxDistance.value.toString(),
+            sort.value.toString(), minLength.value.toString(), minStars.value.toString()))
     }
 
     fun getTrails() : LiveData<List<Trail>> {
@@ -44,15 +58,31 @@ class HikerViewModel: ViewModel() {
         favTrails.value!!.add(trail)
         favTrails.postValue(favTrails.value!!)
         println(favTrails.value.toString())
+
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("favTrails")
+                .child(trail.id).setValue(trail)
+        }
     }
 
     fun isFav(trailPost: Trail): Boolean {
         return favTrails.value?.contains(trailPost) ?: false
     }
 
+    fun setFavs(newFavs: MutableList<Trail>) {
+        favTrails.postValue(newFavs)
+    }
+
     fun removeFav(trail: Trail) {
         favTrails.value!!.remove(trail)
         favTrails.postValue(favTrails.value!!)
+
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("favTrails")
+                .child(trail.id).removeValue()
+        }
     }
     
     fun getAddress(): LiveData<String> {
@@ -60,11 +90,59 @@ class HikerViewModel: ViewModel() {
     }
 
     fun setAddress(newAddress: String) {
-        val currentFirebaseUser: FirebaseUser  = FirebaseAuth.getInstance().currentUser!!
-        database.child("currentLocations").child(currentFirebaseUser.uid).setValue(newAddress)
-        Log.d("DATABASE: ", database.toString())
-        Log.d("VALUE: ", database.child("currentLocations").child(currentFirebaseUser.uid).key.toString())
-        Log.d("USER", currentFirebaseUser.email!!)
-        currentAddress.postValue(newAddress)
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
+                .child("address").setValue(newAddress)
+            currentAddress.postValue(newAddress)
+        }
+    }
+
+    fun setCity(newCity: String) {
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
+                .child("city").setValue(newCity)
+            currentCity.postValue(newCity)
+        }
+    }
+
+    fun getCity(): LiveData<String> {
+        return currentCity
+    }
+
+    fun setStateIndex(newIndex: Int) {
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
+                .child("stateIndex").setValue(newIndex)
+            currentStateIndex.postValue(newIndex)
+        }
+    }
+
+    fun getStateIndex(): LiveData<Int> {
+        return currentStateIndex
+    }
+
+    fun setMaxDistance(newMaxDistance: String) {
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
+                .child("maxDistance").setValue(newMaxDistance)
+            maxDistance.postValue(newMaxDistance)
+        }
+    }
+
+    fun getMaxDistance(): LiveData<String> {
+        return maxDistance
+    }
+
+    fun setSort(newSort: String) {
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
+                .child("sort").setValue(newSort)
+            sort.postValue(newSort)
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.project.hiker.ui.home
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,10 +52,14 @@ class PostTrailAdapter(private val viewModel: HikerViewModel,
         fun bind(item: Trail?) {
             if(item == null) return
             title.text = item.name
-            println("bind")
 
             stars.text = item.stars.toString()
             comments.text = item.summary
+            if (viewModel.isFav(item)) {
+                theFavView.setImageResource(R.drawable.ic_favorite_black_24dp)
+            } else {
+                theFavView.setImageResource(R.drawable.ic_favorite_border_black_24dp)
+            }
 
             theFavView.setOnClickListener {
                 // unfavorite. notify if on favorites screen
@@ -68,7 +73,6 @@ class PostTrailAdapter(private val viewModel: HikerViewModel,
                 // favorite
                 else {
                     theFavView.setImageResource(R.drawable.ic_favorite_black_24dp)
-                    println("ADDING IT")
                     viewModel.addFav(item)
                 }
             }
@@ -84,16 +88,13 @@ class PostTrailAdapter(private val viewModel: HikerViewModel,
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        println("position: $position")
         holder.bind(trails[holder.adapterPosition])
     }
 
     fun submitPosts(items: List<Trail>) {
         trails = items
-        println("the count of favs: ${items.size}")
         notifyDataSetChanged()
     }
-
 
     override fun getItemCount() = trails.size
 

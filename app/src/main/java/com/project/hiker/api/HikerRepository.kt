@@ -15,18 +15,25 @@ class HikerRepository(private val trailsApi: TrailsApi, private val latLonApi: L
         return trails!!
     }
 
-    suspend fun getTrails(address: String): List<Trail>? {
+    suspend fun getTrails(address: String, maxDistance: String, sort: String, minLength: String, minStars: String): List<Trail>? {
         val latLon = latLonApi.getLatLon(address)
-        Log.d("LAT", latLon.getLat())
-        Log.d("LON", latLon.getLon())
-        val params: MutableMap<String, String> = HashMap<String, String>()
+        val params: MutableMap<String, String> = HashMap()
         params.put("lat", latLon.getLat())
         params.put("lon", latLon.getLon())
         params.put("maxDistance", "10")
         params.put("key", "200620954-df710afab6f0931dab3f24fdd7754c1d")
+        params.put("maxDistance", maxDistance)
+        params.put("sort", sort)
+        params.put("minLength", minLength)
+        params.put("minStars", minStars)
+        params.put("maxResults", "50")
 
         val trails = trailsApi.getTrails(params).execute().body()
-        return unpackTrails(trails!!)
+
+        if (trails != null)
+            return unpackTrails(trails)
+        else
+            return mutableListOf()
     }
 
     fun getConditions(): Condition? {

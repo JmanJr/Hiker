@@ -2,6 +2,7 @@ package com.project.hiker.ui.favorites
 
 //import android.R
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -19,10 +20,15 @@ import com.project.hiker.ui.home.PostTrailAdapter
 
 
 class FavoritesFragment: Fragment() {
+
     private lateinit var viewModel: HikerViewModel
+    public var updated = false
+
     companion object {
-        fun newInstance(): FavoritesFragment {
-            return FavoritesFragment()
+        fun newInstance(viewModel: HikerViewModel): FavoritesFragment {
+            val fragment = FavoritesFragment()
+            fragment.viewModel = viewModel
+            return fragment
         }
     }
 
@@ -39,15 +45,13 @@ class FavoritesFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        (activity as AppCompatActivity).supportActionBar?.title = "Favorites"
-        viewModel = ViewModelProviders.of(this).get(HikerViewModel::class.java)
-        println("view model in favorites: " + viewModel.getTrails().value.toString())
+
         // Process menu for this fragment
         val root = inflater.inflate(R.layout.favorites_fragment, container, false)
         val adapter = initRecyclerView(root)
         viewModel.getFavs().observe(this, Observer {
-            println("in favorites fragment: " + it.toString())
             adapter.submitPosts(it)
+            updated = true
         })
         return root
     }
