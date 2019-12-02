@@ -27,23 +27,19 @@ class HikerViewModel: ViewModel() {
     }
     private var database: DatabaseReference = FirebaseDatabase.getInstance().reference
     private var maxDistance = MutableLiveData<String>()
-    private var sort = MutableLiveData<String>().apply {
-        value = "quality"
-    }
-    private var minLength = MutableLiveData<String>().apply {
-        value = "0"
-    }
-    private var minStars = MutableLiveData<String>().apply {
-        value = "0"
-    }
+    private var currentSortIndex = MutableLiveData<Int>()
+    private var minLength = MutableLiveData<String>()
+    private var minStars = MutableLiveData<Int>()
 
 
     fun fetchTrails() = viewModelScope.launch(
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO) {
         // Update LiveData from IO dispatcher, use postValue
+        var sort = if (currentSortIndex.value == null || (currentSortIndex.value)!!.toInt() == 0) "quality"
+            else "distance"
         trails.postValue(trailRepository.getTrails(currentAddress.value.toString(), maxDistance.value.toString(),
-            sort.value.toString(), minLength.value.toString(), minStars.value.toString()))
+            sort, minLength.value.toString(), minStars.value.toString()))
     }
 
     fun getTrails() : LiveData<List<Trail>> {
@@ -137,12 +133,42 @@ class HikerViewModel: ViewModel() {
         return maxDistance
     }
 
-    fun setSort(newSort: String) {
+    fun setSortIndex(newIndex: Int) {
         val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
         if (currentFirebaseUser != null) {
             database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
-                .child("sort").setValue(newSort)
-            sort.postValue(newSort)
+                .child("sortIndex").setValue(newIndex)
+            currentSortIndex.postValue(newIndex)
         }
+    }
+
+    fun getSortIndex(): LiveData<Int> {
+        return currentSortIndex
+    }
+
+    fun setMinLength(newMinLength: String) {
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
+                .child("minLength").setValue(newMinLength)
+            minLength.postValue(newMinLength)
+        }
+    }
+
+    fun getMinLength(): LiveData<String> {
+        return minLength
+    }
+
+    fun setMinStars(newMinStars: Int) {
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
+                .child("minStars").setValue(newMinStars)
+            minStars.postValue(newMinStars)
+        }
+    }
+
+    fun getMinStars(): LiveData<Int> {
+        return minStars
     }
 }

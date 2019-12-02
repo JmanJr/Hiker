@@ -86,11 +86,11 @@ class MainActivity : AppCompatActivity() {
                         viewModel.setMaxDistance(newMaxDistance!!)
                     }
 
-                    val sort =
-                        dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("sort")
-                            .getValue(String::class.java)
-                    if (sort != null) {
-                        viewModel.setSort(sort!!)
+                    val sortIndex =
+                        dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("sortIndex")
+                            .getValue(Int::class.java)
+                    if (sortIndex != null) {
+                        viewModel.setSortIndex(sortIndex!!)
                     }
 
                     val city =
@@ -105,6 +105,20 @@ class MainActivity : AppCompatActivity() {
                             .getValue(Int::class.java)
                     if (stateIndex != null) {
                         viewModel.setStateIndex(stateIndex!!)
+                    }
+
+                    val minLength =
+                        dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("minLength")
+                            .getValue(String::class.java)
+                    if (minLength != null) {
+                        viewModel.setMinLength(minLength!!)
+                    }
+
+                    val minStars =
+                        dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("minStars")
+                            .getValue(Int::class.java)
+                    if (minStars != null) {
+                        viewModel.setMinStars(minStars!!)
                     }
 
                     val favTrails =
@@ -308,11 +322,11 @@ class MainActivity : AppCompatActivity() {
                                 viewModel.setMaxDistance(newMaxDistance!!)
                             }
 
-                            val sort =
-                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("sort")
-                                    .getValue(String::class.java)
-                            if (sort != null) {
-                                viewModel.setSort(sort!!)
+                            val sortIndex =
+                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("sortIndex")
+                                    .getValue(Int::class.java)
+                            if (sortIndex != null) {
+                                viewModel.setSortIndex(sortIndex!!)
                             }
 
                             val city =
@@ -327,6 +341,20 @@ class MainActivity : AppCompatActivity() {
                                     .getValue(Int::class.java)
                             if (stateIndex != null) {
                                 viewModel.setStateIndex(stateIndex!!)
+                            }
+
+                            val minLength =
+                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("minLength")
+                                    .getValue(String::class.java)
+                            if (minLength != null) {
+                                viewModel.setMinLength(minLength!!)
+                            }
+
+                            val minStars =
+                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("minStars")
+                                    .getValue(Int::class.java)
+                            if (minStars != null) {
+                                viewModel.setMinStars(minStars!!)
                             }
 
                             val favTrails =

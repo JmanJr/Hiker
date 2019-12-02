@@ -55,10 +55,54 @@ class LocationFragment: Fragment() {
         adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
 
         // Finally, data bind the spinner object with dapter
-        states_spinner.adapter = adapter;
+        states_spinner.adapter = adapter
 
         // Set an on item selected listener for spinner object
         states_spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent:AdapterView<*>, view: View, position: Int, id: Long){
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>){
+                // Another interface callback
+            }
+        }
+
+        val orderAdapter = ArrayAdapter(
+            activity!!, // Context
+            android.R.layout.simple_spinner_item, // Layout
+            resources.getStringArray(R.array.sort_array) // Array
+        )
+
+        // Set the drop down view resource
+        orderAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+
+        // Finally, data bind the spinner object with dapter
+        order_spinner.adapter = orderAdapter
+
+        // Set an on item selected listener for spinner object
+        order_spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(parent:AdapterView<*>, view: View, position: Int, id: Long){
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>){
+                // Another interface callback
+            }
+        }
+
+        val starsAdapter = ArrayAdapter(
+            activity!!, // Context
+            android.R.layout.simple_spinner_item, // Layout
+            resources.getStringArray(R.array.stars_array) // Array
+        )
+
+        // Set the drop down view resource
+        starsAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+
+        // Finally, data bind the spinner object with dapter
+        stars_spinner.adapter = starsAdapter
+
+        // Set an on item selected listener for spinner object
+        stars_spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent:AdapterView<*>, view: View, position: Int, id: Long){
             }
 
@@ -76,6 +120,9 @@ class LocationFragment: Fragment() {
         viewModel.getMaxDistance().observe(this, Observer {
             maxDistanceET.setText(it)
         })
+        viewModel.getSortIndex().observe(this, Observer {
+            order_spinner.setSelection(it)
+        })
 
         submitLocationBut.setOnClickListener {
             var address = cityET.text.toString()
@@ -86,6 +133,7 @@ class LocationFragment: Fragment() {
                 address += states_spinner.selectedItem.toString()
             }
             val maxDistance = maxDistanceET.text.toString().toIntOrNull()
+            val minLength = minLengthET.text.toString().toIntOrNull()
 
             if (address.isNullOrBlank()) {
                 activity?.apply {
@@ -103,16 +151,27 @@ class LocationFragment: Fragment() {
                     ).show()
                 }
             }
+            else if(minLength == null || minLength <= 0) {
+                activity?.apply {
+                    Toast.makeText(
+                        this, "Invalid Minimum Length",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
             else {
-                viewModel.setAddress(address)
+
                 viewModel.setCity(cityET.text.toString())
                 viewModel.setStateIndex(states_spinner.selectedItemPosition)
                 viewModel.setMaxDistance(maxDistanceET.text.toString())
-                viewModel.setSort(orderByPicker.text.toString())
+                viewModel.setSortIndex(order_spinner.selectedItemPosition)
+                viewModel.setMinLength(minLengthET.text.toString())
+                viewModel.setMinStars(stars_spinner.selectedItemPosition)
+                viewModel.setAddress(address)
 
                 activity?.apply {
                     Toast.makeText(
-                        this, "Location Changed",
+                        this, "Filters Updated",
                         Toast.LENGTH_LONG
                     ).show()
                 }
