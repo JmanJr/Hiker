@@ -56,6 +56,12 @@ class PostTrailAdapter(private val viewModel: HikerViewModel,
             title.setOnClickListener {
                 viewModel.viewTrail(itemView.context, item)
             }
+            comments.setOnClickListener {
+                viewModel.viewTrail(itemView.context, item)
+            }
+            stars.setOnClickListener {
+                viewModel.viewTrail(itemView.context, item)
+            }
 
             stars.text = item.stars.toString() + " / 5.0"
             comments.text = item.summary
@@ -82,8 +88,6 @@ class PostTrailAdapter(private val viewModel: HikerViewModel,
             }
         }
     }
-
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val itemView = LayoutInflater.from(parent.context)

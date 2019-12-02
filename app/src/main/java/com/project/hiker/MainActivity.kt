@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var filter: LocationFragment
     private lateinit var currentFrag: String
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -65,6 +64,24 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this)[HikerViewModel::class.java]
 
+        setupDatabase()
+
+        home = HomeFragment.newInstance(viewModel)
+        favs = FavoritesFragment.newInstance(viewModel)
+        filter = LocationFragment.newInstance(viewModel)
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(customOnNavigationItemSelectedListener)
+        bottomNavigationView.menu.findItem(R.id.navigation_home).isChecked = true
+        (this as AppCompatActivity).supportActionBar?.title = "Trails"
+
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction().replace(R.id.homeContainer, home)
+                .commit()
+            currentFrag = "home"
+        }
+    }
+
+    private fun setupDatabase() {
         val addressListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Get Post object and use the values to update the UI
@@ -126,10 +143,14 @@ class MainActivity : AppCompatActivity() {
                             .children
                     var favs: MutableList<Trail> = mutableListOf()
 
+                    var favTrailIds: String = ""
                     favTrails.forEach {
-                        favs.add(it.getValue(Trail::class.java)!!)
+                        favTrailIds += it.getValue(String::class.java)!! + ","
                     }
-                    viewModel.setFavs(favs)
+                    if (favTrailIds.isNotEmpty()) {
+                        favTrailIds.trimEnd()
+                        viewModel.fetchFavTrails(favTrailIds)
+                    }
                 }
             }
 
@@ -140,20 +161,6 @@ class MainActivity : AppCompatActivity() {
 
         val database = FirebaseDatabase.getInstance().reference
         database.addListenerForSingleValueEvent(addressListener)
-
-        home = HomeFragment.newInstance(viewModel)
-        favs = FavoritesFragment.newInstance(viewModel)
-        filter = LocationFragment.newInstance(viewModel)
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(customOnNavigationItemSelectedListener)
-        bottomNavigationView.menu.findItem(R.id.navigation_home).isChecked = true
-        (this as AppCompatActivity).supportActionBar?.title = "Trails"
-
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().replace(R.id.homeContainer, home)
-                .commit()
-            currentFrag = "home"
-        }
     }
 
     private val customOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
@@ -301,80 +308,7 @@ class MainActivity : AppCompatActivity() {
 
                 newUserRef.set(user, SetOptions.merge())
                  */
-                val addressListener = object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        // Get Post object and use the values to update the UI
-                        val currentFirebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
-                        if (currentFirebaseUser != null) {
-                            val address =
-                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("address")
-                                    .getValue(String::class.java)
-                            if (address == null) {
-                                viewModel.setAddress("Austin, Texas")
-                            } else {
-                                viewModel.setAddress(address)
-                            }
-
-                            val newMaxDistance =
-                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("maxDistance")
-                                    .getValue(String::class.java)
-                            if (newMaxDistance != null) {
-                                viewModel.setMaxDistance(newMaxDistance!!)
-                            }
-
-                            val sortIndex =
-                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("sortIndex")
-                                    .getValue(Int::class.java)
-                            if (sortIndex != null) {
-                                viewModel.setSortIndex(sortIndex!!)
-                            }
-
-                            val city =
-                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("city")
-                                    .getValue(String::class.java)
-                            if (city != null) {
-                                viewModel.setCity(city!!)
-                            }
-
-                            val stateIndex =
-                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("stateIndex")
-                                    .getValue(Int::class.java)
-                            if (stateIndex != null) {
-                                viewModel.setStateIndex(stateIndex!!)
-                            }
-
-                            val minLength =
-                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("minLength")
-                                    .getValue(String::class.java)
-                            if (minLength != null) {
-                                viewModel.setMinLength(minLength!!)
-                            }
-
-                            val minStars =
-                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("minStars")
-                                    .getValue(Int::class.java)
-                            if (minStars != null) {
-                                viewModel.setMinStars(minStars!!)
-                            }
-
-                            val favTrails =
-                                dataSnapshot.child("users").child(currentFirebaseUser.uid).child("favTrails")
-                                    .children
-                            var favs: MutableList<Trail> = mutableListOf()
-
-                            favTrails.forEach {
-                                favs.add(it.getValue(Trail::class.java)!!)
-                            }
-                            viewModel.setFavs(favs)
-                        }
-                    }
-
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        viewModel.setAddress("Austin, Texas")
-                    }
-                }
-                val database = FirebaseDatabase.getInstance().reference
-                database.addListenerForSingleValueEvent(addressListener)
+                setupDatabase()
 
             } else {
                 createSignInIntent()

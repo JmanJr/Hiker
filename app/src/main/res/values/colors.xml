@@ -6,4 +6,5 @@
     <color name="cardViewTan">#fbe3b9</color>
     <color name="mainBackground">#0c9463</color>
     <color name="secondaryBackground">#13d18c</color>
+    <color name="entryFieldBackground">#e6d0aa</color>
 </resources>

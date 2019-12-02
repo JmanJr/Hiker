@@ -18,8 +18,9 @@ interface TrailsApi {
     fun getTrails(
         @QueryMap paramsMap: Map<String, String> ): Call<Trails>
 
-    @GET("/data/get-conditions?ids=7001635&key=200620954-df710afab6f0931dab3f24fdd7754c1d")
-    fun getConditions(): Call<Condition>
+    @GET("/data/get-trails-by-id")
+    fun getTrailsByIds(
+        @QueryMap paramsMap: Map<String, String> ): Call<Trails>
 
     class Trails(
         val trails: List<Trail>

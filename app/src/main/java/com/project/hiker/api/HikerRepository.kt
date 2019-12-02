@@ -52,8 +52,27 @@ class HikerRepository(private val trailsApi: TrailsApi, private val latLonApi: L
             return mutableListOf()
     }
 
-    fun getConditions(): Condition? {
-        val conditions = trailsApi.getConditions().execute().body()
-        return conditions
+    suspend fun getTrailsByIds(ids: String): MutableList<Trail>? {
+        var trails: TrailsApi.Trails?
+
+        if (ids != "") {
+            val params: MutableMap<String, String> = HashMap()
+            params.put("key", "200620954-df710afab6f0931dab3f24fdd7754c1d")
+            params.put("ids", ids)
+
+            try {
+                trails = trailsApi.getTrailsByIds(params).execute().body()
+            } catch (e: Exception){
+                trails = null
+            }
+
+        } else {
+            trails = null
+        }
+
+        if (trails != null)
+            return unpackTrails(trails)!!.toMutableList()
+        else
+            return mutableListOf()
     }
 }

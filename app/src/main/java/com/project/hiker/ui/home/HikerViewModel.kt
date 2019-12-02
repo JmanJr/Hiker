@@ -45,6 +45,13 @@ class HikerViewModel: ViewModel() {
             sort, minLength.value.toString(), minStars.value.toString()))
     }
 
+    fun fetchFavTrails(ids: String) = viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO) {
+        // Update LiveData from IO dispatcher, use postValue
+        favTrails.postValue(trailRepository.getTrailsByIds(ids))
+    }
+
     fun getTrails() : LiveData<List<Trail>> {
         return trails
     }
@@ -61,7 +68,7 @@ class HikerViewModel: ViewModel() {
         val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
         if (currentFirebaseUser != null) {
             database.child("users").child(currentFirebaseUser.uid).child("favTrails")
-                .child(trail.id).setValue(trail)
+                .child(trail.id).setValue(trail.id)
         }
     }
 
@@ -187,6 +194,12 @@ class HikerViewModel: ViewModel() {
             // put all the relevant data into the intent and start activity
             val intent = Intent(context, ViewTrail::class.java)
             intent.putExtra("name", trail.name)
+            intent.putExtra("summary", trail.summary)
+            intent.putExtra("lat", trail.latitude)
+            intent.putExtra("long", trail.longitude)
+            intent.putExtra("conditionDetails", trail.conditionDetails)
+            intent.putExtra("difficulty", trail.difficulty)
+            intent.putExtra("conditionStatus", trail.conditionStatus)
             ContextCompat.startActivity(context, intent, null)
         }
     }

@@ -61,6 +61,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:hint="select state"
+            android:popupBackground="@color/entryFieldBackground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/state"/>
@@ -112,6 +113,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:hint="select order"
+            android:popupBackground="@color/entryFieldBackground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/orderBy"/>
@@ -163,18 +165,33 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:hint="select order"
+            android:popupBackground="@color/entryFieldBackground"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/minStars"/>
 
         <Button
             android:id="@+id/submitLocationBut"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="35dp"
-            android:text="submit"
+            android:layout_marginBottom="10dp"
+            android:text="Filter"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:background="@color/colorPrimaryDark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/stars_spinner" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"
+            android:layout_marginTop="35dp"
+            android:background="@color/cardViewTan"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/submitLocationBut"
+            android:enabled="false"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

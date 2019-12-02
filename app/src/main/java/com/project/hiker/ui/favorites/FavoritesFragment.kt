@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.project.hiker.R
 import com.project.hiker.ui.home.HikerViewModel
 import com.project.hiker.ui.home.PostTrailAdapter
+import kotlinx.android.synthetic.main.favorites_fragment.*
 
 
 class FavoritesFragment: Fragment() {
@@ -50,6 +51,11 @@ class FavoritesFragment: Fragment() {
         val root = inflater.inflate(R.layout.favorites_fragment, container, false)
         val adapter = initRecyclerView(root)
         viewModel.getFavs().observe(this, Observer {
+            if (it.count() == 0) {
+                no_favs.visibility = View.VISIBLE
+            } else {
+                no_favs.visibility = View.GONE
+            }
             adapter.submitPosts(it)
             updated = true
         })
