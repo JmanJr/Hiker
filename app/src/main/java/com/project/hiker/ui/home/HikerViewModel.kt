@@ -1,6 +1,9 @@
 package com.project.hiker.ui.home
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import androidx.lifecycle.*
@@ -9,6 +12,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.hiker.api.*
+import edu.cs371m.reddit.ui.Weather
 import kotlinx.coroutines.launch
 
 class HikerViewModel: ViewModel() {
@@ -143,6 +147,23 @@ class HikerViewModel: ViewModel() {
             database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
                 .child("sort").setValue(newSort)
             sort.postValue(newSort)
+        }
+    }
+
+    fun gotToWeather(context: Context, trail: Trail) {
+        Companion.goToWeather(context, trail)
+    }
+
+//    @GlideExtension
+    companion object {
+        fun goToWeather(context: Context, trail: Trail) {
+            val intent = Intent(context, Weather::class.java)
+            println("the name is: " + trail.name)
+            intent.putExtra("id", trail.id)
+            intent.putExtra("lon", trail.longitude)
+            intent.putExtra("lat", trail.latitude)
+            intent.putExtra("name", trail.name)
+            ContextCompat.startActivity(context, intent, null)
         }
     }
 }

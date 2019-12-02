@@ -14,10 +14,14 @@ data class Trail (
     @SerializedName("latitude")
     val latitude: Float,
     @SerializedName("longitude")
-    val longitude: Float
+    val longitude: Float,
+    @SerializedName("length")
+    val length: Float,
+    @SerializedName("difficulty")
+    val difficulty: String
 ) {
     constructor() : this("", "",
         "", 0.0, 1.toFloat(),
-        1.toFloat()
+        1.toFloat(), 1.toFloat(), ""
     )
 }

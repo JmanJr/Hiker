@@ -47,14 +47,22 @@ class PostTrailAdapter(private val viewModel: HikerViewModel,
         var stars = itemView.findViewById<TextView>(R.id.rating)
 
         var comments = itemView.findViewById<TextView>(R.id.summary)
+        var length = itemView.findViewById<TextView>(R.id.lengthTV);
+        var difficulty = itemView.findViewById<TextView>(R.id.difficultyTV)
         var theFavView = itemView.findViewById<ImageView>(R.id.trailFav)
+
 
         fun bind(item: Trail?) {
             if(item == null) return
+            itemView.setOnClickListener {
+                viewModel.gotToWeather(itemView.context, item)
+            }
             title.text = item.name
 
             stars.text = item.stars.toString()
             comments.text = item.summary
+            length.text = item.length.toString() + " miles"
+            difficulty.text = item.difficulty
             if (viewModel.isFav(item)) {
                 theFavView.setImageResource(R.drawable.ic_favorite_black_24dp)
             } else {
