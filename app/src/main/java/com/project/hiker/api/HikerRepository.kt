@@ -16,19 +16,35 @@ class HikerRepository(private val trailsApi: TrailsApi, private val latLonApi: L
     }
 
     suspend fun getTrails(address: String, maxDistance: String, sort: String, minLength: String, minStars: String): List<Trail>? {
-        val latLon = latLonApi.getLatLon(address)
-        val params: MutableMap<String, String> = HashMap()
-        params.put("lat", latLon.getLat())
-        params.put("lon", latLon.getLon())
-        params.put("maxDistance", "10")
-        params.put("key", "200620954-df710afab6f0931dab3f24fdd7754c1d")
-        params.put("maxDistance", maxDistance)
-        params.put("sort", sort)
-        params.put("minLength", minLength)
-        params.put("minStars", minStars)
-        params.put("maxResults", "50")
+        var trails: TrailsApi.Trails?
+        var latLon: LatLon?
+        try {
+            latLon = latLonApi.getLatLon(address)
+        } catch(e: Exception) {
+            latLon = null
+        }
 
-        val trails = trailsApi.getTrails(params).execute().body()
+        if (latLon != null) {
+            val params: MutableMap<String, String> = HashMap()
+            params.put("lat", latLon.getLat())
+            params.put("lon", latLon.getLon())
+            params.put("maxDistance", "10")
+            params.put("key", "200620954-df710afab6f0931dab3f24fdd7754c1d")
+            params.put("maxDistance", maxDistance)
+            params.put("sort", sort)
+            params.put("minLength", minLength)
+            params.put("minStars", minStars)
+            params.put("maxResults", "100")
+
+            try {
+                trails = trailsApi.getTrails(params).execute().body()
+            } catch (e: Exception){
+                trails = null
+            }
+
+        } else {
+            trails = null
+        }
 
         if (trails != null)
             return unpackTrails(trails)
@@ -36,8 +52,27 @@ class HikerRepository(private val trailsApi: TrailsApi, private val latLonApi: L
             return mutableListOf()
     }
 
-    fun getConditions(): Condition? {
-        val conditions = trailsApi.getConditions().execute().body()
-        return conditions
+    suspend fun getTrailsByIds(ids: String): MutableList<Trail>? {
+        var trails: TrailsApi.Trails?
+
+        if (ids != "") {
+            val params: MutableMap<String, String> = HashMap()
+            params.put("key", "200620954-df710afab6f0931dab3f24fdd7754c1d")
+            params.put("ids", ids)
+
+            try {
+                trails = trailsApi.getTrailsByIds(params).execute().body()
+            } catch (e: Exception){
+                trails = null
+            }
+
+        } else {
+            trails = null
+        }
+
+        if (trails != null)
+            return unpackTrails(trails)!!.toMutableList()
+        else
+            return mutableListOf()
     }
 }

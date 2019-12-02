@@ -31,10 +31,17 @@ class HomeFragment : Fragment() {
 
     fun submitPosts(trails: List<Trail>, adapter: PostTrailAdapter) {
         adapter.submitPosts(trails)
-
         swipeRefreshLayout.setOnRefreshListener {
             //            viewModel.addPost()
             swipeRefreshLayout.isRefreshing = false
+        }
+        if (trails.count() == 0) {
+            no_trails.visibility = View.VISIBLE
+            searchResults.visibility = View.INVISIBLE
+        }
+        else {
+            no_trails.visibility = View.INVISIBLE
+            searchResults.visibility = View.VISIBLE
         }
     }
 
@@ -74,15 +81,8 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.getTrails().observe(this, Observer {
+            no_trails.visibility = View.INVISIBLE
             swipe.isRefreshing = true
-            if (it.count() == 0) {
-                no_trails.visibility = View.VISIBLE
-                searchResults.visibility = View.INVISIBLE
-            }
-            else {
-                no_trails.visibility = View.INVISIBLE
-                searchResults.visibility = View.VISIBLE
-            }
             submitPosts(it, this.postTrailAdapter)
             swipe.isRefreshing = false
         })

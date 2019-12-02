@@ -54,12 +54,17 @@ class PostTrailAdapter(private val viewModel: HikerViewModel,
 
         fun bind(item: Trail?) {
             if(item == null) return
+//            itemView.setOnClickListener {
+//                viewModel.gotToWeather(itemView.context, item)
+//            }
+
+
             itemView.setOnClickListener {
-                viewModel.gotToWeather(itemView.context, item)
+                viewModel.viewTrail(itemView.context, item)
             }
             title.text = item.name
 
-            stars.text = item.stars.toString()
+            stars.text = item.stars.toString() + " / 5.0"
             comments.text = item.summary
             length.text = item.length.toString() + " miles"
             difficulty.text = item.difficulty
@@ -86,8 +91,6 @@ class PostTrailAdapter(private val viewModel: HikerViewModel,
             }
         }
     }
-
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val itemView = LayoutInflater.from(parent.context)

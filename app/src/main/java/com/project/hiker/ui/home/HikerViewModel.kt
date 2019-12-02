@@ -31,23 +31,26 @@ class HikerViewModel: ViewModel() {
     }
     private var database: DatabaseReference = FirebaseDatabase.getInstance().reference
     private var maxDistance = MutableLiveData<String>()
-    private var sort = MutableLiveData<String>().apply {
-        value = "quality"
-    }
-    private var minLength = MutableLiveData<String>().apply {
-        value = "0"
-    }
-    private var minStars = MutableLiveData<String>().apply {
-        value = "0"
-    }
+    private var currentSortIndex = MutableLiveData<Int>()
+    private var minLength = MutableLiveData<String>()
+    private var minStars = MutableLiveData<Int>()
 
 
     fun fetchTrails() = viewModelScope.launch(
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO) {
         // Update LiveData from IO dispatcher, use postValue
+        var sort = if (currentSortIndex.value == null || (currentSortIndex.value)!!.toInt() == 0) "quality"
+            else "distance"
         trails.postValue(trailRepository.getTrails(currentAddress.value.toString(), maxDistance.value.toString(),
-            sort.value.toString(), minLength.value.toString(), minStars.value.toString()))
+            sort, minLength.value.toString(), minStars.value.toString()))
+    }
+
+    fun fetchFavTrails(ids: String) = viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO) {
+        // Update LiveData from IO dispatcher, use postValue
+        favTrails.postValue(trailRepository.getTrailsByIds(ids))
     }
 
     fun getTrails() : LiveData<List<Trail>> {
@@ -66,7 +69,7 @@ class HikerViewModel: ViewModel() {
         val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
         if (currentFirebaseUser != null) {
             database.child("users").child(currentFirebaseUser.uid).child("favTrails")
-                .child(trail.id).setValue(trail)
+                .child(trail.id).setValue(trail.id)
         }
     }
 
@@ -141,29 +144,80 @@ class HikerViewModel: ViewModel() {
         return maxDistance
     }
 
-    fun setSort(newSort: String) {
+    fun setSortIndex(newIndex: Int) {
         val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
         if (currentFirebaseUser != null) {
             database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
-                .child("sort").setValue(newSort)
-            sort.postValue(newSort)
+                .child("sortIndex").setValue(newIndex)
+            currentSortIndex.postValue(newIndex)
         }
     }
 
-    fun gotToWeather(context: Context, trail: Trail) {
-        Companion.goToWeather(context, trail)
+    fun getSortIndex(): LiveData<Int> {
+        return currentSortIndex
     }
 
-//    @GlideExtension
+    fun setMinLength(newMinLength: String) {
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
+                .child("minLength").setValue(newMinLength)
+            minLength.postValue(newMinLength)
+        }
+    }
+
+    fun getMinLength(): LiveData<String> {
+        return minLength
+    }
+
+    fun setMinStars(newMinStars: Int) {
+        val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
+        if (currentFirebaseUser != null) {
+            database.child("users").child(currentFirebaseUser.uid).child("currentFilters")
+                .child("minStars").setValue(newMinStars)
+            minStars.postValue(newMinStars)
+        }
+    }
+
+    fun getMinStars(): LiveData<Int> {
+        return minStars
+    }
+
+    // calls the companion class's doOnePost method
+    fun viewTrail(context: Context, trail: Trail) {
+        Companion.viewTrail(context, trail)
+    }
+
+    // Convenient place to put it as it is shared
     companion object {
-        fun goToWeather(context: Context, trail: Trail) {
-            val intent = Intent(context, Weather::class.java)
-            println("the name is: " + trail.name)
-            intent.putExtra("id", trail.id)
-            intent.putExtra("lon", trail.longitude)
-            intent.putExtra("lat", trail.latitude)
+        // create one post activity
+        fun viewTrail(context: Context, trail: Trail) {
+            // put all the relevant data into the intent and start activity
+            val intent = Intent(context, ViewTrail::class.java)
             intent.putExtra("name", trail.name)
+            intent.putExtra("summary", trail.summary)
+            intent.putExtra("lat", trail.latitude)
+            intent.putExtra("long", trail.longitude)
+            intent.putExtra("conditionDetails", trail.conditionDetails)
+            intent.putExtra("difficulty", trail.difficulty)
+            intent.putExtra("conditionStatus", trail.conditionStatus)
             ContextCompat.startActivity(context, intent, null)
         }
     }
+
+//    fun gotToWeather(context: Context, trail: Trail) {
+//        Companion.goToWeather(context, trail)
+//    }
+
+//    @GlideExtension
+//    companion object {
+//        fun goToWeather(context: Context, trail: Trail) {
+//            val intent = Intent(context, Weather::class.java)
+//            intent.putExtra("id", trail.id)
+//            intent.putExtra("lon", trail.longitude)
+//            intent.putExtra("lat", trail.latitude)
+//            intent.putExtra("name", trail.name)
+//            ContextCompat.startActivity(context, intent, null)
+//        }
+//    }
 }

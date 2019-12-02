@@ -13,6 +13,7 @@
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustNothing">
         <activity android:name="edu.cs371m.reddit.ui.Weather"/>
+        <activity android:name=".ui.home.ViewTrail"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -21,7 +22,6 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-
             </intent-filter>
         </activity>
     </application>
