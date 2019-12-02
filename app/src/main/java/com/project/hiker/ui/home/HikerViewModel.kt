@@ -1,6 +1,9 @@
 package com.project.hiker.ui.home
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import androidx.lifecycle.*
@@ -170,5 +173,21 @@ class HikerViewModel: ViewModel() {
 
     fun getMinStars(): LiveData<Int> {
         return minStars
+    }
+
+    // calls the companion class's doOnePost method
+    fun viewTrail(context: Context, trail: Trail) {
+        Companion.viewTrail(context, trail)
+    }
+
+    // Convenient place to put it as it is shared
+    companion object {
+        // create one post activity
+        fun viewTrail(context: Context, trail: Trail) {
+            // put all the relevant data into the intent and start activity
+            val intent = Intent(context, ViewTrail::class.java)
+            intent.putExtra("name", trail.name)
+            ContextCompat.startActivity(context, intent, null)
+        }
     }
 }

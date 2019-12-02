@@ -52,8 +52,12 @@ class PostTrailAdapter(private val viewModel: HikerViewModel,
         fun bind(item: Trail?) {
             if(item == null) return
             title.text = item.name
+            // push the onepost activity on title click
+            title.setOnClickListener {
+                viewModel.viewTrail(itemView.context, item)
+            }
 
-            stars.text = item.stars.toString()
+            stars.text = item.stars.toString() + " / 5.0"
             comments.text = item.summary
             if (viewModel.isFav(item)) {
                 theFavView.setImageResource(R.drawable.ic_favorite_black_24dp)

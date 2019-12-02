@@ -123,6 +123,12 @@ class LocationFragment: Fragment() {
         viewModel.getSortIndex().observe(this, Observer {
             order_spinner.setSelection(it)
         })
+        viewModel.getMinLength().observe(this, Observer {
+            minLengthET.setText(it)
+        })
+        viewModel.getMinStars().observe(this, Observer {
+            stars_spinner.setSelection(it)
+        })
 
         submitLocationBut.setOnClickListener {
             var address = cityET.text.toString()
