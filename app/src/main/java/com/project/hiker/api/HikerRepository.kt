@@ -1,7 +1,5 @@
 package com.project.hiker.api
 
-import android.util.Log
-
 class HikerRepository(private val trailsApi: TrailsApi, private val latLonApi: LatLonApi) {
 
     fun unpackTrails(response: TrailsApi.Trails): List<Trail>? {

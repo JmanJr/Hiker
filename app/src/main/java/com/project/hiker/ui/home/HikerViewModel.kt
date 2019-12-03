@@ -2,7 +2,6 @@ package com.project.hiker.ui.home
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
@@ -12,17 +11,22 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.project.hiker.api.*
-import edu.cs371m.reddit.ui.Weather
 import kotlinx.coroutines.launch
 
 class HikerViewModel: ViewModel() {
-
+    private val weatherApi = WeatherApi.create()
     private val trailsApi = TrailsApi.create()
     private val latLonApi = LatLonApi.create()
     private val trailRepository = HikerRepository(trailsApi, latLonApi)
     private var trails = MutableLiveData<List<Trail>>().apply {
         value = mutableListOf()
     }
+    //private var weathers = MutableLiveData<List<WeatherObj>>().apply {
+      //  value = mutableListOf()
+    //}
+
+
+    lateinit var weatherList: List<WeatherObj>
     private var currentAddress = MutableLiveData<String>()
     private var currentCity = MutableLiveData<String>()
     private var currentStateIndex = MutableLiveData<Int>()
@@ -203,6 +207,50 @@ class HikerViewModel: ViewModel() {
             intent.putExtra("conditionStatus", trail.conditionStatus)
             ContextCompat.startActivity(context, intent, null)
         }
+    }
+
+
+
+
+
+    fun unpackWeather(response: WeatherApi.Weathers?): List<WeatherObj> {
+        val weathers: MutableList<WeatherObj>? = mutableListOf()
+
+        response?.weathers?.forEach {
+            val weather = it
+            weathers!!.add(weather)
+        }
+
+        return weathers!!
+    }
+
+
+
+    fun setWeathers(lat: Float, long: Float) {
+        var weathers: WeatherApi.Weathers?
+
+        val params: MutableMap<String, String> = HashMap()
+        params.put("lat", lat.toString())
+        params.put("lon", long.toString())
+        params.put("cnt", "10")
+        params.put("appid", "b1b15e88fa797225412429c1c50c122a1")
+
+        weathers = weatherApi.getWeathers(params).execute().body()
+
+        weatherList = unpackWeather(weathers)
+        println("the count of weathers List: " + weatherList.count())
+
+    }
+
+    fun fetchWeathers(lat: Float, long: Float) = viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO) {
+        // Update LiveData from IO dispatcher, use postValue
+        setWeathers(lat, long)
+    }
+
+    fun getWeathers(): List<WeatherObj> {
+        return weatherList
     }
 
 //    fun gotToWeather(context: Context, trail: Trail) {

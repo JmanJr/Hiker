@@ -6,19 +6,26 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.viewModelScope
 import com.project.hiker.R
+import com.project.hiker.api.WeatherApi
+import com.project.hiker.api.WeatherObj
 import kotlinx.android.synthetic.main.view_trail.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class ViewTrail : AppCompatActivity() {
 
     var lat: Float = 0.toFloat()
     var long: Float = 0.toFloat()
+    val viewModel = HikerViewModel()
+
+    lateinit var weatherList: List<WeatherObj>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.view_trail)
-        setSupportActionBar(toolbar)
 
         // set up the backbutton on actionbar
         val actionbar = supportActionBar
@@ -54,6 +61,9 @@ class ViewTrail : AppCompatActivity() {
 
         if (intent.getStringExtra("difficulty") != null)
             difficulty.text = intent.getStringExtra("difficulty")
+
+        viewModel.fetchWeathers(lat, long)
+        //weatherList = viewModel.getWeathers()
     }
 
     fun openMaps() {
@@ -65,10 +75,6 @@ class ViewTrail : AppCompatActivity() {
         }
     }
 
-    // just goes back if back button pressed in actionbar
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
-    }
+
 
 }

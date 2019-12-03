@@ -8,14 +8,16 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.QueryMap
 
 interface WeatherApi {
 
-    @GET("/data/get-trails?lat=40.0274&lon=-105.2519&maxDistance=10&key=200620954-df710afab6f0931dab3f24fdd7754c1d")
-    fun getWeather(): Call<Trails>
+    @GET("/data/2.5/forecast/daily?")
+    fun getWeathers(
+        @QueryMap paramsMap: Map<String, String> ): Call<WeatherApi.Weathers>
 
-    class Trails(
-        val trails: List<Trail>
+    class Weathers(
+        val weathers: List<WeatherObj>
     )
 
     companion object {
@@ -25,7 +27,7 @@ interface WeatherApi {
         }
         var httpurl = HttpUrl.Builder()
             .scheme("https")
-            .host("www.hikingproject.com")
+            .host("samples.openweathermap.org")
             .build()
         fun create(): WeatherApi = create(httpurl)
         private fun create(httpUrl: HttpUrl): WeatherApi {
