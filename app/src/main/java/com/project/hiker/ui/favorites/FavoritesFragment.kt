@@ -1,6 +1,5 @@
 package com.project.hiker.ui.favorites
 
-//import android.R
 import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup
@@ -19,12 +18,14 @@ import com.project.hiker.ui.home.HikerViewModel
 import com.project.hiker.ui.home.PostTrailAdapter
 import kotlinx.android.synthetic.main.favorites_fragment.*
 
-
+// The logic for the favorites screen.
 class FavoritesFragment: Fragment() {
 
+    // shared viewmodel, and an updated flag to let home page know if it needs to reload.
     private lateinit var viewModel: HikerViewModel
     public var updated = false
 
+    // pass in the shared viewmodel created in MainActivity
     companion object {
         fun newInstance(viewModel: HikerViewModel): FavoritesFragment {
             val fragment = FavoritesFragment()
@@ -46,10 +47,11 @@ class FavoritesFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        // Process menu for this fragment
         val root = inflater.inflate(R.layout.favorites_fragment, container, false)
         val adapter = initRecyclerView(root)
+
+        // Favorites observer. If there are no favorites, show the no favs message,
+        // otherwise show recyclerview. If a change is made, tell home screen to update.
         viewModel.getFavs().observe(this, Observer {
             if (it.count() == 0) {
                 no_favs.visibility = View.VISIBLE
