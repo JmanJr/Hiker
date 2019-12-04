@@ -219,6 +219,7 @@ class HikerViewModel: ViewModel() {
         response?.weathers?.forEach {
             val weather = it
             weathers!!.add(weather)
+            System.out.println("weather is getting set")
         }
 
         return weathers!!
@@ -226,7 +227,7 @@ class HikerViewModel: ViewModel() {
 
 
 
-    fun setWeathers(lat: Float, long: Float) {
+    private fun setWeathers(lat: Float, long: Float) {
         var weathers: WeatherApi.Weathers?
 
         val params: MutableMap<String, String> = HashMap()
@@ -235,10 +236,10 @@ class HikerViewModel: ViewModel() {
         params.put("cnt", "10")
         params.put("appid", "b1b15e88fa797225412429c1c50c122a1")
 
-        weathers = weatherApi.getWeathers(params).execute().body()
+        weathers = weatherApi.getWeathers(lat.toString(), long.toString(),"10","b1b15e88fa797225412429c1c50c122a1").execute().body()
 
         weatherList = unpackWeather(weathers)
-        println("the count of weathers List: " + weatherList.count())
+        println("the count of weathers List: " + weathers?.weathers)
 
     }
 

@@ -8,13 +8,17 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 import retrofit2.http.QueryMap
 
 interface WeatherApi {
 
+//    @GET("/data/2.5/forecast/daily?")
+//    fun getWeathers(
+//        @QueryMap paramsMap: Map<String, String> ): Call<WeatherApi.Weathers>
     @GET("/data/2.5/forecast/daily?")
-    fun getWeathers(
-        @QueryMap paramsMap: Map<String, String> ): Call<WeatherApi.Weathers>
+    fun getWeathers(@Query("lat") lat: String, @Query("lon") lon: String,
+    @Query("cnt") cnt: String, @Query("appid") appid: String) : Call<Weathers>
 
     class Weathers(
         val weathers: List<WeatherObj>
