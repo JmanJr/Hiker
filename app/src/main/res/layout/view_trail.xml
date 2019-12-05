@@ -114,7 +114,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/conditions"
                     android:paddingTop="20dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:id="@+id/diff">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -139,6 +140,75 @@
                         android:paddingStart="5dp"
                         android:textSize="18sp"
                         android:text="No Condition Information" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/diff"
+                    android:paddingTop="20dp"
+                    android:orientation="horizontal"
+                    android:id="@+id/len">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:text="Length: "
+                        android:layout_weight="2"/>
+
+                    <TextView
+                        android:id="@+id/length"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:paddingStart="5dp"
+                        android:textSize="18sp"
+                        android:text="No Length Information" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/len"
+                    android:paddingTop="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:text="Address: "
+                        android:layout_weight="2"/>
+
+                    <TextView
+                        android:id="@+id/address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:paddingStart="5dp"
+                        android:textSize="18sp"
+                        android:text="No Address Information" />
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

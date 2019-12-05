@@ -205,6 +205,7 @@ class HikerViewModel: ViewModel() {
             intent.putExtra("conditionDetails", trail.conditionDetails)
             intent.putExtra("difficulty", trail.difficulty)
             intent.putExtra("conditionStatus", trail.conditionStatus)
+            intent.putExtra("length", trail.length)
             ContextCompat.startActivity(context, intent, null)
         }
     }

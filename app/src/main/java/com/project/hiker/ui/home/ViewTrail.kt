@@ -1,6 +1,8 @@
 package com.project.hiker.ui.home
 
 import android.content.Intent
+import android.location.Address
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -45,6 +47,18 @@ class ViewTrail : AppCompatActivity() {
             mapButton.setOnClickListener {
                 openMaps()
             }
+
+            var _address: MutableList<Address> = mutableListOf()
+            val geocoder: Geocoder = Geocoder(this)
+
+            try {
+                _address = geocoder.getFromLocation(lat.toDouble(), long.toDouble(), 1)
+            } catch (e: Exception) {
+
+            }
+
+            if (_address.count() > 0)
+                address.text = _address[0].getAddressLine(0)
         }
 
         // checks for conditions and adds them if possible.
@@ -63,6 +77,9 @@ class ViewTrail : AppCompatActivity() {
         if (intent.getStringExtra("difficulty") != null)
             difficulty.text = intent.getStringExtra("difficulty")
 
+        if (intent.getStringExtra("length") != null)
+            length.text = intent.getStringExtra("length") + " Miles"
+
         viewModel.fetchWeathers(lat, long)
         //weatherList = viewModel.getWeathers()
     }
@@ -77,6 +94,9 @@ class ViewTrail : AppCompatActivity() {
         }
     }
 
-
-
+    // just goes back if back button pressed in actionbar
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
 }
