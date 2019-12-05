@@ -2,6 +2,7 @@ package com.project.hiker.api
 
 class HikerRepository(private val trailsApi: TrailsApi, private val latLonApi: LatLonApi) {
 
+    // turns a trails from into a list of trails
     fun unpackTrails(response: TrailsApi.Trails): List<Trail>? {
         val trails: MutableList<Trail>? = mutableListOf()
 
@@ -13,7 +14,10 @@ class HikerRepository(private val trailsApi: TrailsApi, private val latLonApi: L
         return trails!!
     }
 
-    suspend fun getTrails(address: String, maxDistance: String, sort: String, minLength: String, minStars: String): List<Trail>? {
+    // gets trails from API. Packs all query params into a map,
+    // then passes along request. Then turns response into trail data
+    suspend fun getTrails(address: String, maxDistance: String, sort: String, minLength: String,
+                          minStars: String): List<Trail>? {
         var trails: TrailsApi.Trails?
         var latLon: LatLon?
         try {
@@ -22,6 +26,7 @@ class HikerRepository(private val trailsApi: TrailsApi, private val latLonApi: L
             latLon = null
         }
 
+        // lat lon is necessary. If no lat lon... no trails
         if (latLon != null) {
             val params: MutableMap<String, String> = HashMap()
             params.put("lat", latLon.getLat())
@@ -34,6 +39,7 @@ class HikerRepository(private val trailsApi: TrailsApi, private val latLonApi: L
             params.put("minStars", minStars)
             params.put("maxResults", "100")
 
+            // if service error just have empty list
             try {
                 trails = trailsApi.getTrails(params).execute().body()
             } catch (e: Exception){
@@ -50,9 +56,11 @@ class HikerRepository(private val trailsApi: TrailsApi, private val latLonApi: L
             return mutableListOf()
     }
 
+    // gets specific trails based on ID. Used for favorites.
     suspend fun getTrailsByIds(ids: String): MutableList<Trail>? {
         var trails: TrailsApi.Trails?
 
+        // better be some IDs in here or you got no favs
         if (ids != "") {
             val params: MutableMap<String, String> = HashMap()
             params.put("key", "200620954-df710afab6f0931dab3f24fdd7754c1d")

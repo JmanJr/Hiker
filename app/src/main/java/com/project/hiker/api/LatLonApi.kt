@@ -10,6 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 
+// gets latlon information. nothing specials
 interface LatLonApi {
 
     @GET("/{address}?json=1")

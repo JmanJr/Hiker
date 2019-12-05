@@ -3,20 +3,11 @@ package com.project.hiker
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -25,7 +16,6 @@ import java.util.*
 
 
 import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -39,12 +29,10 @@ import com.project.hiker.ui.home.HikerViewModel
 import com.project.hiker.ui.home.HomeFragment
 import com.project.hiker.ui.location.LocationFragment
 
-//import com.google.firebase.firestore.SetOptions
 
 class MainActivity : AppCompatActivity() {
 
     private val RC_SIGN_IN = 123
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var viewModel: HikerViewModel
     private lateinit var home: HomeFragment
     private lateinit var favs: FavoritesFragment
@@ -62,18 +50,21 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
 
+        // getes our data in the viewmodel
         viewModel = ViewModelProviders.of(this)[HikerViewModel::class.java]
-
         setupDatabase()
 
+        // creates these once.
         home = HomeFragment.newInstance(viewModel)
         favs = FavoritesFragment.newInstance(viewModel)
         filter = LocationFragment.newInstance(viewModel)
 
+        // sets up a bottomnavigationview
         bottomNavigationView.setOnNavigationItemSelectedListener(customOnNavigationItemSelectedListener)
         bottomNavigationView.menu.findItem(R.id.navigation_home).isChecked = true
         (this as AppCompatActivity).supportActionBar?.title = "Trails"
 
+        // gets us started
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().replace(R.id.homeContainer, home)
                 .commit()
@@ -81,10 +72,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // sets up database and grabs all our goodies. One and done,
+    // rest is all viewmodel for users
     private fun setupDatabase() {
         val addressListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get Post object and use the values to update the UI
                 val currentFirebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
                 if (currentFirebaseUser != null) {
                     val address =
@@ -100,50 +92,49 @@ class MainActivity : AppCompatActivity() {
                         dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("maxDistance")
                             .getValue(String::class.java)
                     if (newMaxDistance != null) {
-                        viewModel.setMaxDistance(newMaxDistance!!)
+                        viewModel.setMaxDistance(newMaxDistance)
                     }
 
                     val sortIndex =
                         dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("sortIndex")
                             .getValue(Int::class.java)
                     if (sortIndex != null) {
-                        viewModel.setSortIndex(sortIndex!!)
+                        viewModel.setSortIndex(sortIndex)
                     }
 
                     val city =
                         dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("city")
                             .getValue(String::class.java)
                     if (city != null) {
-                        viewModel.setCity(city!!)
+                        viewModel.setCity(city)
                     }
 
                     val stateIndex =
                         dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("stateIndex")
                             .getValue(Int::class.java)
                     if (stateIndex != null) {
-                        viewModel.setStateIndex(stateIndex!!)
+                        viewModel.setStateIndex(stateIndex)
                     }
 
                     val minLength =
                         dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("minLength")
                             .getValue(String::class.java)
                     if (minLength != null) {
-                        viewModel.setMinLength(minLength!!)
+                        viewModel.setMinLength(minLength)
                     }
 
                     val minStars =
                         dataSnapshot.child("users").child(currentFirebaseUser.uid).child("currentFilters").child("minStars")
                             .getValue(Int::class.java)
                     if (minStars != null) {
-                        viewModel.setMinStars(minStars!!)
+                        viewModel.setMinStars(minStars)
                     }
 
                     val favTrails =
                         dataSnapshot.child("users").child(currentFirebaseUser.uid).child("favTrails")
                             .children
-                    var favs: MutableList<Trail> = mutableListOf()
 
-                    var favTrailIds: String = ""
+                    var favTrailIds = ""
                     favTrails.forEach {
                         favTrailIds += it.getValue(String::class.java)!! + ","
                     }
@@ -163,14 +154,19 @@ class MainActivity : AppCompatActivity() {
         database.addListenerForSingleValueEvent(addressListener)
     }
 
+    // our customnavlistener. shows and hides fragments instead of swapping them. Keeps things smooth
     private val customOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
         if (menuItem.isChecked)
             return@OnNavigationItemSelectedListener false
 
+        // switch for which fragment to show. the one chosen is all in the name
         menuItem.isChecked = true
         when (menuItem.itemId) {
             R.id.navigation_home -> {
                 (this as AppCompatActivity).supportActionBar?.title = "Trails"
+                // big ol' transaction. If favs were changed, then update to reflect changes.
+                // then, if we already have added this, show it, otherwise add it. Then
+                // hide everything else.
                 supportFragmentManager.beginTransaction().apply {
                     if(currentFrag.equals("favs") && favs.updated) {
                         home.submitTrails(viewModel.getTrails().value!!, home.postTrailAdapter)
@@ -193,6 +189,7 @@ class MainActivity : AppCompatActivity() {
 
                 return@OnNavigationItemSelectedListener true
             }
+
             R.id.navigation_filter -> {
                 (this as AppCompatActivity).supportActionBar?.title = "Filter"
 
@@ -213,6 +210,7 @@ class MainActivity : AppCompatActivity() {
 
                 return@OnNavigationItemSelectedListener true
             }
+
             R.id.navigation_favorites -> {
                 (this as AppCompatActivity).supportActionBar?.title = "Favorites"
 
@@ -258,6 +256,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // firebase functions for sign in and out
     fun createSignInIntent() {
         // [START auth_fui_create_intent]
         // Choose authentication providers
@@ -271,6 +270,7 @@ class MainActivity : AppCompatActivity() {
                 .createSignInIntentBuilder()
                 .setIsSmartLockEnabled(false)
                 .setAvailableProviders(providers)
+                .setTheme(R.style.LoginTheme)
                 .build(),
             RC_SIGN_IN
         )
@@ -294,19 +294,7 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == Activity.RESULT_OK) {
-                // Successfully signed in
-                //val user = FirebaseAuth.getInstance().currentUser
-                /*
-                val name = user!!.displayName
-                val email = user.email
-                val user_id = user.uid
-                val new_user = User(name, email, user_id)
-                val newUserRef = mDb
-                   .collection("Users")
-                    .document(FirebaseAuth.getInstance().uid)
-
-                newUserRef.set(user, SetOptions.merge())
-                 */
+                // success
                 setupDatabase()
 
             } else {

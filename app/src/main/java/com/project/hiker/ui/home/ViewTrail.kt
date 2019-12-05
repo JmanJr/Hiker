@@ -21,9 +21,9 @@ class ViewTrail : AppCompatActivity() {
     // store the lat and long for the google maps button
     var lat: Float = 0.toFloat()
     var long: Float = 0.toFloat()
-    val viewModel = HikerViewModel()
 
-    lateinit var weatherList: List<WeatherObj>
+    //private val viewModel = HikerViewModel()
+    //lateinit var weatherList: List<WeatherObj>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,23 +48,25 @@ class ViewTrail : AppCompatActivity() {
                 openMaps()
             }
 
-            var _address: MutableList<Address> = mutableListOf()
-            val geocoder: Geocoder = Geocoder(this)
+            // some wild geocoding going on here...
+            // just try to fetch. If no address, no error, just empty
+            var tempAddress: MutableList<Address> = mutableListOf()
+            val geocoder  = Geocoder(this)
 
             try {
-                _address = geocoder.getFromLocation(lat.toDouble(), long.toDouble(), 1)
+                tempAddress = geocoder.getFromLocation(lat.toDouble(), long.toDouble(), 1)
             } catch (e: Exception) {
-
             }
 
-            if (_address.count() > 0)
-                address.text = _address[0].getAddressLine(0)
+            if (tempAddress.count() > 0)
+                address.text = tempAddress[0].getAddressLine(0)
         }
 
         // checks for conditions and adds them if possible.
         var conditionString: String = ""
         if (intent.getStringExtra("conditionStatus") != null)
             conditionString += intent.getStringExtra("conditionStatus")
+
         if (intent.getStringExtra("conditionDetails") != null) {
             if (conditionString.isNotBlank()) {
                 conditionString += ": "
@@ -80,7 +82,7 @@ class ViewTrail : AppCompatActivity() {
         if (intent.getStringExtra("length") != null)
             length.text = intent.getStringExtra("length") + " Miles"
 
-        viewModel.fetchWeathers(lat, long)
+        //viewModel.fetchWeathers(lat, long)
         //weatherList = viewModel.getWeathers()
     }
 

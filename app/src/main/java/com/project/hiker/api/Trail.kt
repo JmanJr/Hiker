@@ -2,6 +2,8 @@ package com.project.hiker.api
 
 import com.google.gson.annotations.SerializedName
 
+// trail object. Used for retrofit and lots of other goodies in a
+// trail themed app
 data class Trail (
     @SerializedName("id")
     val id: String,

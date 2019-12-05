@@ -1,4 +1,4 @@
-package edu.cs371m.reddit.ui
+package com.project.hiker.ui
 
 import android.os.Bundle
 import android.os.PersistableBundle

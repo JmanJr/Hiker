@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustNothing">
-        <activity android:name="edu.cs371m.reddit.ui.Weather"/>
+        <activity android:name=".ui.Weather"/>
         <activity android:name=".ui.home.ViewTrail"/>
         <activity
             android:name=".MainActivity"

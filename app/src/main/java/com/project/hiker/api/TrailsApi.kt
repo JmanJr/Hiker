@@ -10,6 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
 
+// gets our trails, either by latlon or ID. nothing fancy here
 interface TrailsApi {
 
     @GET("/data/get-trails")

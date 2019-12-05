@@ -2,6 +2,7 @@ package com.project.hiker.api
 
 import com.google.gson.annotations.SerializedName
 
+// object to get latlon from retrofit
 data class LatLon (
     @SerializedName("latt")
     val latitude: Float,

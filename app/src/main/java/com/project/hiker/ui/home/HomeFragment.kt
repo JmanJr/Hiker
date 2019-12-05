@@ -15,8 +15,9 @@ import com.project.hiker.R
 import com.project.hiker.api.Trail
 import kotlinx.android.synthetic.main.fragment_home.*
 
+// main list of trails
 class HomeFragment : Fragment() {
-
+    // the good bits, keep these around
     private lateinit var viewModel: HikerViewModel
     lateinit var postTrailAdapter: PostTrailAdapter
     private lateinit var swipe: SwipeRefreshLayout
@@ -29,10 +30,12 @@ class HomeFragment : Fragment() {
         }
     }
 
+    // sends trails on down to the adapter
     fun submitTrails(trails: List<Trail>, adapter: PostTrailAdapter) {
         adapter.submitPosts(trails)
     }
 
+    // gets that guy ready to spin
     private fun initSwipeLayout(root: View) {
         swipe = root.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
         swipe.setOnRefreshListener {
@@ -59,8 +62,11 @@ class HomeFragment : Fragment() {
 
         initAdapter(root)
         initSwipeLayout(root)
+
         swipe.isRefreshing = true
 
+        // nothing crazy. Empty list at first to prevent Denver from
+        // temporarily showing Lady Bird Lake while we change cities
         viewModel.getAddress().observe(this, Observer {
             swipe.isRefreshing = true
             submitTrails(mutableListOf(), this.postTrailAdapter)
@@ -68,6 +74,8 @@ class HomeFragment : Fragment() {
             viewModel.fetchTrails()
         })
 
+        // fetch the trails. If there aren't any and this isn't the
+        // first time opening, show a no trails message
         viewModel.getTrails().observe(this, Observer {
             no_trails.visibility = View.INVISIBLE
             submitTrails(it, this.postTrailAdapter)

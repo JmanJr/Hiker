@@ -13,27 +13,36 @@ import com.google.firebase.database.FirebaseDatabase
 import com.project.hiker.api.*
 import kotlinx.coroutines.launch
 
+// viewmodel. lotta shared data here, we do most of the work
+// on startup to make experience faster during runtime
 class HikerViewModel: ViewModel() {
+    // APIs and repository
     private val weatherApi = WeatherApi.create()
     private val trailsApi = TrailsApi.create()
     private val latLonApi = LatLonApi.create()
     private val trailRepository = HikerRepository(trailsApi, latLonApi)
-    private var trails = MutableLiveData<List<Trail>>().apply {
-        value = mutableListOf()
-    }
+    private var database: DatabaseReference = FirebaseDatabase.getInstance().reference
+
+
     //private var weathers = MutableLiveData<List<WeatherObj>>().apply {
       //  value = mutableListOf()
     //}
 
-
-    lateinit var weatherList: List<WeatherObj>
-    private var currentAddress = MutableLiveData<String>()
-    private var currentCity = MutableLiveData<String>()
-    private var currentStateIndex = MutableLiveData<Int>()
+    // major data lists
+    private var trails = MutableLiveData<List<Trail>>().apply {
+        value = mutableListOf()
+    }
     private var favTrails = MutableLiveData<MutableList<Trail>>().apply {
         value = mutableListOf()
     }
-    private var database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    lateinit var weatherList: List<WeatherObj>
+
+    // address related vars
+    private var currentAddress = MutableLiveData<String>()
+    private var currentCity = MutableLiveData<String>()
+    private var currentStateIndex = MutableLiveData<Int>()
+
+    // optional filters
     private var maxDistance = MutableLiveData<String>()
     private var currentSortIndex = MutableLiveData<Int>()
     private var minLength = MutableLiveData<String>()
@@ -43,7 +52,7 @@ class HikerViewModel: ViewModel() {
     fun fetchTrails() = viewModelScope.launch(
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO) {
-        // Update LiveData from IO dispatcher, use postValue
+        // convert sort index into the wording the API wants. default = quality
         var sort = if (currentSortIndex.value == null || (currentSortIndex.value)!!.toInt() == 0) "quality"
             else "distance"
         trails.postValue(trailRepository.getTrails(currentAddress.value.toString(), maxDistance.value.toString(),
@@ -53,14 +62,15 @@ class HikerViewModel: ViewModel() {
     fun fetchFavTrails(ids: String) = viewModelScope.launch(
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO) {
-        // Update LiveData from IO dispatcher, use postValue
         favTrails.postValue(trailRepository.getTrailsByIds(ids))
     }
 
+    // just get trails. never modify outside of fetch
     fun getTrails() : LiveData<List<Trail>> {
         return trails
     }
 
+    // everything fav related.
     internal fun getFavs(): MutableLiveData<MutableList<Trail>> {
         return favTrails
     }
@@ -70,6 +80,8 @@ class HikerViewModel: ViewModel() {
         favTrails.postValue(favTrails.value!!)
         println(favTrails.value.toString())
 
+        // check if anyone is signed in this very second after some horrible nightmare situations that
+        // we will never risk again
         val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
         if (currentFirebaseUser != null) {
             database.child("users").child(currentFirebaseUser.uid).child("favTrails")
@@ -81,9 +93,6 @@ class HikerViewModel: ViewModel() {
         return favTrails.value?.contains(trailPost) ?: false
     }
 
-    fun setFavs(newFavs: MutableList<Trail>) {
-        favTrails.postValue(newFavs)
-    }
 
     fun removeFav(trail: Trail) {
         favTrails.value!!.remove(trail)
@@ -95,7 +104,8 @@ class HikerViewModel: ViewModel() {
                 .child(trail.id).removeValue()
         }
     }
-    
+
+    // address related functions
     fun getAddress(): LiveData<String> {
         return currentAddress
     }
@@ -109,6 +119,7 @@ class HikerViewModel: ViewModel() {
         }
     }
 
+    // nothing special for any of the fields from here on out. self explanatory
     fun setCity(newCity: String) {
         val currentFirebaseUser: FirebaseUser?  = FirebaseAuth.getInstance().currentUser
         if (currentFirebaseUser != null) {
@@ -187,12 +198,12 @@ class HikerViewModel: ViewModel() {
         return minStars
     }
 
-    // calls the companion class's doOnePost method
+    // calls the companion class's viewTrail method
     fun viewTrail(context: Context, trail: Trail) {
         Companion.viewTrail(context, trail)
     }
 
-    // Convenient place to put it as it is shared
+    // Convenient place to put it as it is shared. Borrowed from reddit. Thanks Witchel!
     companion object {
         // create one post activity
         fun viewTrail(context: Context, trail: Trail) {
