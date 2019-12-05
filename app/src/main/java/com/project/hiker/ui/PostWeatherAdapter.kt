@@ -1,6 +1,5 @@
 package com.project.hiker.ui
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,7 +70,7 @@ class PostWeatherAdapter()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.one_row_post, parent, false)
+            .inflate(R.layout.one_row_trail, parent, false)
         return VH(itemView)
     }
 

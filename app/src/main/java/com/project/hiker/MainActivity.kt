@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity() {
                 (this as AppCompatActivity).supportActionBar?.title = "Trails"
                 supportFragmentManager.beginTransaction().apply {
                     if(currentFrag.equals("favs") && favs.updated) {
-                        home.submitPosts(viewModel.getTrails().value!!, home.postTrailAdapter)
+                        home.submitTrails(viewModel.getTrails().value!!, home.postTrailAdapter)
                         favs.updated = false
                     }
 
@@ -315,10 +315,5 @@ class MainActivity : AppCompatActivity() {
         } else {
             createSignInIntent()
         }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }
