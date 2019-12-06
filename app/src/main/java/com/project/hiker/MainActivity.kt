@@ -93,6 +93,8 @@ class MainActivity : AppCompatActivity() {
                             .getValue(String::class.java)
                     if (newMaxDistance != null) {
                         viewModel.setMaxDistance(newMaxDistance)
+                    } else {
+                        viewModel.setMaxDistance("30")
                     }
 
                     val sortIndex =
@@ -100,6 +102,8 @@ class MainActivity : AppCompatActivity() {
                             .getValue(Int::class.java)
                     if (sortIndex != null) {
                         viewModel.setSortIndex(sortIndex)
+                    } else {
+                        viewModel.setSortIndex(0)
                     }
 
                     val city =
@@ -107,6 +111,8 @@ class MainActivity : AppCompatActivity() {
                             .getValue(String::class.java)
                     if (city != null) {
                         viewModel.setCity(city)
+                    } else {
+                        viewModel.setCity("Austin")
                     }
 
                     val stateIndex =
@@ -114,6 +120,8 @@ class MainActivity : AppCompatActivity() {
                             .getValue(Int::class.java)
                     if (stateIndex != null) {
                         viewModel.setStateIndex(stateIndex)
+                    } else {
+                        viewModel.setStateIndex(43)
                     }
 
                     val minLength =
@@ -121,6 +129,8 @@ class MainActivity : AppCompatActivity() {
                             .getValue(String::class.java)
                     if (minLength != null) {
                         viewModel.setMinLength(minLength)
+                    } else {
+                        viewModel.setMinLength("1")
                     }
 
                     val minStars =
@@ -128,6 +138,8 @@ class MainActivity : AppCompatActivity() {
                             .getValue(Int::class.java)
                     if (minStars != null) {
                         viewModel.setMinStars(minStars)
+                    } else {
+                        viewModel.setMinStars(0)
                     }
 
                     val favTrails =
@@ -141,6 +153,8 @@ class MainActivity : AppCompatActivity() {
                     if (favTrailIds.isNotEmpty()) {
                         favTrailIds.trimEnd()
                         viewModel.fetchFavTrails(favTrailIds)
+                    } else {
+                        viewModel.setFavs(mutableListOf())
                     }
                 }
             }
@@ -319,6 +333,7 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 // success
                 setupDatabase()
+                goToHome()
 
             } else {
                 createSignInIntent()

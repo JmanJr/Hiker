@@ -86,6 +86,10 @@ class HikerViewModel: ViewModel() {
         return favTrails.value?.contains(trailPost) ?: false
     }
 
+    fun setFavs(favs: MutableList<Trail>) {
+        favTrails.postValue(favs)
+    }
+
 
     fun removeFav(trail: Trail) {
         favTrails.value!!.remove(trail)
