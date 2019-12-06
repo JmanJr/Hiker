@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.location_fragment.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
+import com.project.hiker.MainActivity
 import com.project.hiker.ui.home.HikerViewModel
 
 
@@ -129,8 +130,14 @@ class LocationFragment: Fragment() {
                 }
                 address += states_spinner.selectedItem.toString()
             }
-            val maxDistance = maxDistanceET.text.toString().toIntOrNull()
-            val minLength = minLengthET.text.toString().toIntOrNull()
+            var maxDistance = maxDistanceET.text.toString().toIntOrNull()
+            if (maxDistance == null) {
+                maxDistance = 50
+            }
+            var minLength = minLengthET.text.toString().toIntOrNull()
+            if (minLength == null || minLength == 0) {
+                minLength = 1
+            }
 
             if (address.isNullOrBlank()) {
                 activity?.apply {
@@ -140,7 +147,7 @@ class LocationFragment: Fragment() {
                     ).show()
                 }
             }
-            else if(maxDistance == null || maxDistance <= 0) {
+            else if(maxDistance < 0) {
                 activity?.apply {
                     Toast.makeText(
                         this, "Invalid Max Distance",
@@ -148,7 +155,7 @@ class LocationFragment: Fragment() {
                     ).show()
                 }
             }
-            else if(minLength == null || minLength <= 0) {
+            else if(minLength < 0) {
                 activity?.apply {
                     Toast.makeText(
                         this, "Invalid Minimum Length",
@@ -172,6 +179,7 @@ class LocationFragment: Fragment() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+                (activity!! as MainActivity).goToHome();
             }
         }
 

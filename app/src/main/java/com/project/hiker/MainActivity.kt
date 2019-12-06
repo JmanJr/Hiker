@@ -235,6 +235,29 @@ class MainActivity : AppCompatActivity() {
         false
     }
 
+    fun goToHome() {
+        bottomNavigationView.menu.findItem(R.id.navigation_home).isChecked = true
+        supportFragmentManager.beginTransaction().apply {
+            if(currentFrag.equals("favs") && favs.updated) {
+                home.submitTrails(viewModel.getTrails().value!!, home.postTrailAdapter)
+                favs.updated = false
+            }
+
+            if (home.isAdded) {
+                show(home)
+            } else {
+                add(R.id.homeContainer, home)
+            }
+
+            supportFragmentManager.fragments.forEach {
+                if (it != home && it.isAdded) {
+                    hide(it)
+                }
+            }
+        }.commit()
+        currentFrag = "home"
+    }
+
     // SOURCE: Code from starter code in peck assignment
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.

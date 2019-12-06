@@ -17,16 +17,10 @@ import kotlinx.coroutines.launch
 // on startup to make experience faster during runtime
 class HikerViewModel: ViewModel() {
     // APIs and repository
-    private val weatherApi = WeatherApi.create()
     private val trailsApi = TrailsApi.create()
     private val latLonApi = LatLonApi.create()
     private val trailRepository = HikerRepository(trailsApi, latLonApi)
     private var database: DatabaseReference = FirebaseDatabase.getInstance().reference
-
-
-    //private var weathers = MutableLiveData<List<WeatherObj>>().apply {
-      //  value = mutableListOf()
-    //}
 
     // major data lists
     private var trails = MutableLiveData<List<Trail>>().apply {
@@ -35,7 +29,6 @@ class HikerViewModel: ViewModel() {
     private var favTrails = MutableLiveData<MutableList<Trail>>().apply {
         value = mutableListOf()
     }
-    lateinit var weatherList: List<WeatherObj>
 
     // address related vars
     private var currentAddress = MutableLiveData<String>()
@@ -220,65 +213,4 @@ class HikerViewModel: ViewModel() {
             ContextCompat.startActivity(context, intent, null)
         }
     }
-
-
-
-
-
-    fun unpackWeather(response: WeatherApi.Weathers?): List<WeatherObj> {
-        val weathers: MutableList<WeatherObj>? = mutableListOf()
-
-        response?.weathers?.forEach {
-            val weather = it
-            weathers!!.add(weather)
-            System.out.println("weather is getting set")
-        }
-
-        return weathers!!
-    }
-
-
-
-    private fun setWeathers(lat: Float, long: Float) {
-        var weathers: WeatherApi.Weathers?
-
-        val params: MutableMap<String, String> = HashMap()
-        params.put("lat", lat.toString())
-        params.put("lon", long.toString())
-        params.put("cnt", "10")
-        params.put("appid", "b1b15e88fa797225412429c1c50c122a1")
-
-        weathers = weatherApi.getWeathers(lat.toString(), long.toString(),"10","b1b15e88fa797225412429c1c50c122a1").execute().body()
-
-        weatherList = unpackWeather(weathers)
-        println("the count of weathers List: " + weathers?.weathers)
-
-    }
-
-    fun fetchWeathers(lat: Float, long: Float) = viewModelScope.launch(
-        context = viewModelScope.coroutineContext
-                + Dispatchers.IO) {
-        // Update LiveData from IO dispatcher, use postValue
-        setWeathers(lat, long)
-    }
-
-    fun getWeathers(): List<WeatherObj> {
-        return weatherList
-    }
-
-//    fun gotToWeather(context: Context, trail: Trail) {
-//        Companion.goToWeather(context, trail)
-//    }
-
-//    @GlideExtension
-//    companion object {
-//        fun goToWeather(context: Context, trail: Trail) {
-//            val intent = Intent(context, Weather::class.java)
-//            intent.putExtra("id", trail.id)
-//            intent.putExtra("lon", trail.longitude)
-//            intent.putExtra("lat", trail.latitude)
-//            intent.putExtra("name", trail.name)
-//            ContextCompat.startActivity(context, intent, null)
-//        }
-//    }
 }

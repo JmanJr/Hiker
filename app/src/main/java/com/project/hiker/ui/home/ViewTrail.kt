@@ -7,13 +7,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.viewModelScope
 import com.project.hiker.R
-import com.project.hiker.api.WeatherApi
-import com.project.hiker.api.WeatherObj
 import kotlinx.android.synthetic.main.view_trail.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 // view one trail
 class ViewTrail : AppCompatActivity() {
@@ -21,9 +16,6 @@ class ViewTrail : AppCompatActivity() {
     // store the lat and long for the google maps button
     var lat: Float = 0.toFloat()
     var long: Float = 0.toFloat()
-
-    //private val viewModel = HikerViewModel()
-    //lateinit var weatherList: List<WeatherObj>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,9 +73,6 @@ class ViewTrail : AppCompatActivity() {
 
         if (intent.getStringExtra("length") != null)
             length.text = intent.getStringExtra("length") + " Miles"
-
-        //viewModel.fetchWeathers(lat, long)
-        //weatherList = viewModel.getWeathers()
     }
 
     // open google maps. https://developers.google.com/maps/documentation/urls/android-intents
